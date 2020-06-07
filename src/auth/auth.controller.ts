@@ -1,9 +1,11 @@
-import { Body, Controller, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Ip, Post, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { RedisService } from 'nestjs-redis';
 
 @Controller('auth')
 export class AuthController {
@@ -20,8 +22,8 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() loginDto: LoginDto, @Res() res: Response) {
-    const user = await this.authService.login(loginDto);
+  async login(@Body() loginDto: LoginDto, @Ip() ip: string, @Res() res: Response) {
+    const user = await this.authService.login(loginDto, ip);
 
     const jwt = this.jwt.sign({ id: user.id });
     res.cookie('token', jwt, { httpOnly: true });
