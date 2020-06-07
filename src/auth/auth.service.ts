@@ -1,28 +1,30 @@
 import { Injectable, ConflictException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { compare, hash } from 'bcrypt';
+import { SignupDto } from './dto/signup.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async signup(name: string, password: string) {
-    const nameExists = await this.prisma.client.user.findOne({ where: { name } });
+  async signup({ name, email, password }: SignupDto) {
+    const emailExists = await this.prisma.client.user.findOne({ where: { email } });
 
-    if (nameExists) {
-      throw new ConflictException('Username is already in use');
+    if (emailExists) {
+      throw new ConflictException('Email is already in use');
     }
 
     const hashedPassword = await hash(password, 10);
 
-    return this.prisma.client.user.create({ data: { name, password: hashedPassword } });
+    return this.prisma.client.user.create({ data: { name, email, password: hashedPassword } });
   }
 
-  async login(name: string, password: string) {
-    const user = await this.prisma.client.user.findOne({ where: { name } });
+  async login({ email, password }: LoginDto) {
+    const user = await this.prisma.client.user.findOne({ where: { email } });
 
     if (!user) {
-      throw new NotFoundException('Username not found');
+      throw new NotFoundException('Email not found');
     }
 
     const valid = await compare(password, user.password);
