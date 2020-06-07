@@ -1,6 +1,6 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { hash } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +16,22 @@ export class AuthService {
     const hashedPassword = await hash(password, 10);
 
     return this.prisma.client.user.create({ data: { name, password: hashedPassword } });
+  }
+
+  async login(name: string, password: string) {
+    const user = await this.prisma.client.user.findOne({ where: { name } });
+
+    if (!user) {
+      throw new NotFoundException('Username not found');
+    }
+
+    const valid = await compare(password, user.password);
+
+    if (!valid) {
+      throw new BadRequestException('Password is incorrect');
+    }
+
+    return user;
   }
 
   async validate({ id }) {

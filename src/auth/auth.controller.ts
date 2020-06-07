@@ -16,4 +16,14 @@ export class AuthController {
 
     res.send({ ...user, token: jwt });
   }
+
+  @Post('login')
+  async login(@Req() req: Request, @Res() res: Response) {
+    const user = await this.authService.login(req.body.name, req.body.password);
+
+    const jwt = this.jwt.sign({ id: user.id });
+    res.cookie('token', jwt, { httpOnly: true });
+
+    res.send({ ...user, token: jwt });
+  }
 }
