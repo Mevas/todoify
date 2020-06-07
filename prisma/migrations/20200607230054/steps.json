@@ -110,6 +110,17 @@
       "arity": "Required"
     },
     {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "User",
+          "field": "name"
+        },
+        "directive": "unique"
+      }
+    },
+    {
       "tag": "CreateField",
       "model": "User",
       "field": "password",
@@ -226,6 +237,38 @@
       "field": "body",
       "type": "String",
       "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Task",
+      "field": "status",
+      "type": "Boolean",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Task",
+          "field": "status"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Task",
+          "field": "status"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "false"
     },
     {
       "tag": "CreateField",
