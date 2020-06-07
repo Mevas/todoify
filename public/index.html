@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>ToDo App</title>
+    <link rel="stylesheet" href="index.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="header">
+      <nav>
+        <a href="#" class="logo">To-Do App</a>
+      </nav>
+    </header>
+    <main>
+      <section class="wrapper">
+        <div class="tasks-container">
+          <h1 class="title">📑 To-Do App 🖊</h1>
+          <div class="addContainer">
+            <form class="add-form" action="index.html" method="post">
+              <input id="create-task-input" class="create-task-input" type="text" placeholder="New task" name="task" />
+              <button id="create-task-button" class="button create-task-button" type="button" onclick="createTask()">Add</button>
+            </form>
+          </div>
+          <div id="tasks-board">
+            <ul id="tasksList"></ul>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <div class="copyright">2020 © Me</div>
+    </footer>
+    <script type="text/javascript" src="index.js"></script>
+  </body>
+</html>

@@ -1,0 +1,165 @@
+* {
+  font-family: 'Poppins', serif;
+  line-height: 1.5em;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+}
+
+ul {
+  padding: 0;
+  display: grid;
+  grid-gap: 1.2em;
+  font-size: 1.1em;
+}
+
+html {
+  height: 100%;
+  background: linear-gradient(to bottom, #24243e, #302b63, #0f0c29);
+  font-family: sans-serif;
+  color: #0f222d;
+  background-size: auto;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  display: grid;
+  grid-template-areas: 'left center right';
+  min-height: calc(100vh - 44px - 44px);
+}
+
+@media screen and (max-width: 767px) {
+  main {
+    grid-template-columns: auto 90% auto;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1279px) {
+  main {
+    grid-template-columns: auto 50% auto;
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  main {
+    grid-template-columns: auto 30% auto;
+  }
+}
+
+.wrapper {
+  grid-area: center;
+}
+
+.tasks-container {
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 30px;
+  margin-top: 200px;
+}
+
+.checkbox {
+  text-align: center;
+  vertical-align: center;
+}
+
+h1 {
+  text-align: center;
+  margin: 0 0 40px 0;
+}
+
+li {
+  list-style: none;
+}
+
+.header {
+  padding: 10px;
+}
+
+.logo {
+  text-decoration: none;
+  color: black;
+  background-color: white;
+  border-radius: 20px;
+  padding: 3px 10px 3px 10px;
+}
+
+.add-form {
+  display: flex;
+  justify-content: space-between;
+}
+
+.create-task-input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+}
+
+.create-task-button {
+  color: white;
+  background-color: #655bcb;
+  border-radius: 100px;
+  padding: 5px 10px;
+}
+
+.task {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.task-content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding-left: 10px;
+}
+
+.task-input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+}
+
+.button {
+  cursor: pointer;
+  user-select: none;
+  transition: 0.1s;
+  border-width: 0;
+  outline: 0;
+}
+
+.delete-button {
+  border-radius: 50%;
+  padding: 0 6px;
+}
+
+.delete-button:hover {
+  background-color: rgba(255, 92, 92, 1);
+  border-radius: 50%;
+  padding: 0 6px;
+  color: white;
+}
+
+.crossed {
+  text-decoration: line-through;
+  color: rgba(0, 0, 0, 0.35);
+}
+
+.footer {
+  text-align: center;
+  padding: 10px;
+}
+
+.copyright {
+  color: #666666;
+}
