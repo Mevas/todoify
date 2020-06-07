@@ -28,6 +28,8 @@
     "@nestjs/platform-express": "^7.0.0",
     "@prisma/client": "2.0.0-beta.8",
     "bcrypt": "^4.0.1",
+    "class-transformer": "^0.2.3",
+    "class-validator": "^0.12.2",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "passport": "^0.4.1",

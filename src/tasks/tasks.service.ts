@@ -5,7 +5,11 @@ import { PrismaService } from '../prisma/prisma.service';
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async tasks() {
-    return this.prisma.client.task.findMany();
+  async getTasks(userId: number) {
+    return this.prisma.client.task.findMany({ where: { userId } });
+  }
+
+  async getTaskById(userId: number, taskId) {
+    return this.prisma.client.user.findOne({ where: { id: userId } }).tasks({ where: { id: taskId } });
   }
 }

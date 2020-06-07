@@ -26,4 +26,10 @@ export class AuthController {
 
     res.send(user);
   }
+
+  @Post('logout')
+  async logout(@Res() res: Response) {
+    res.cookie('token', '', { httpOnly: true });
+    res.sendStatus(200);
+  }
 }
