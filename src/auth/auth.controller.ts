@@ -14,7 +14,7 @@ export class AuthController {
     const jwt = this.jwt.sign({ id: user.id });
     res.cookie('token', jwt, { httpOnly: true });
 
-    res.send({ ...user, token: jwt });
+    res.send(user);
   }
 
   @Post('login')
@@ -24,6 +24,6 @@ export class AuthController {
     const jwt = this.jwt.sign({ id: user.id });
     res.cookie('token', jwt, { httpOnly: true });
 
-    res.send({ ...user, token: jwt });
+    res.send(user);
   }
 }
