@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { TasksModule } from './tasks/tasks.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
 import { RedisModule } from 'nestjs-redis';
 import {
   EMAIL_HOST,
@@ -21,7 +20,6 @@ import { LoggerModule } from './logger/logger.module';
 @Module({
   imports: [
     AuthModule,
-    UsersModule,
     TasksModule,
     PrismaModule,
     RedisModule.register([
