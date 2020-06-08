@@ -31,14 +31,16 @@ export class AuthService {
 
     await this.logger.info(`New user: [${user.name}] - [${user.email}]`);
 
-    return user;
+    const { password: p, ...r } = user;
+
+    return r;
   }
 
   async login({ email, password }: LoginDto, ip) {
     const loginAttempts = this.redisService.getClient('loginAttempts');
     const bannedIps = this.redisService.getClient('bannedIps');
 
-    const attempts = parseInt((await loginAttempts.get(ip)) ?? '1');
+    const attempts = parseInt((await loginAttempts.get(ip)) ?? '0');
 
     if ((await bannedIps.get(ip)) === 'true') {
       await bannedIps.set(ip, 'true', 'ex', MAX_ATTEMPTS_EXCEEDED_PENALTY);
@@ -75,13 +77,15 @@ export class AuthService {
       throw new BadRequestException({
         attemptsLeft: MAX_ATTEMPTS - attempts,
         statusCode: HttpStatus.BAD_REQUEST,
-        error: 'Password is incorrect',
+        message: 'Password is incorrect',
       });
     }
 
     await this.logger.info(`User [${user.name}] ([${user.email}]) logged in from [${ip}]`);
 
-    return user;
+    const { password: p, ...r } = user;
+
+    return r;
   }
 
   async logout(user: User) {

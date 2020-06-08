@@ -42,7 +42,7 @@ export class LoggerService {
     try {
       const datetime = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
 
-      await appendFile('app.log', `[${level}] [${datetime}] ${message}\n`);
+      await appendFile('app.log', `[${level}] [${datetime} UTC] ${message}\n`);
     } catch (e) {
       console.error(e);
     }

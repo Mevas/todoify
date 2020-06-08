@@ -8,8 +8,16 @@ const debounceFunction = (func, delay) => {
 };
 
 const getTasks = async (useCached = false) => {
+  if (window.localStorage.getItem('loggedIn') === 'false') {
+    window.location.replace('/to-do-app/public/login.html');
+    return;
+  }
+
+  const name = JSON.parse(window.localStorage.getItem('user'))?.name;
+  document.getElementById('list-title').innerText = name ? `${name}'s task list` : 'My task list';
+
   if (useCached) {
-    let tasks = JSON.parse(window.localStorage.getItem('tasks'));
+    const tasks = JSON.parse(window.localStorage.getItem('tasks'));
 
     if (tasks) {
       console.log('Used cached tasks');
@@ -29,8 +37,10 @@ const getTasks = async (useCached = false) => {
     }
   }
 
-  const response = await fetch('http://localhost:3000/api/todos');
-  tasks = await response.json();
+  const response = await fetch('http://localhost:3000/api/tasks', { credentials: 'include' });
+  const tasks = await response.json();
+  tasks.sort((t1, t2) => t1.id - t2.id);
+
   board.innerHTML = '';
 
   tasks.forEach((task) => {
@@ -40,7 +50,7 @@ const getTasks = async (useCached = false) => {
                 <input id="task${task.id}-checkbox" type="checkbox" ${task.done && 'checked'}>
             </div>
             <div class="task-content">
-                <input id="task${task.id}-text" class="task-input ${task.done && 'crossed'}" type="text" value="${task.task}">
+                <input id="task${task.id}-text" class="task-input ${task.done && 'crossed'}" type="text" value="${task.body}">
                 <span class="button delete-button" onclick="deleteTask(${task.id})">✕</span>
             </div>
         </li>
@@ -50,7 +60,7 @@ const getTasks = async (useCached = false) => {
   tasks.forEach((task) => {
     document.getElementById(`task${task.id}-text`).addEventListener('input', (e) => {
       const newValue = document.getElementById(e.target.id).value;
-      debounceFunction(async () => await editTask(task.id, newValue), 500);
+      debounceFunction(async () => await editTaskBody(task.id, newValue), 500);
     });
     document.getElementById(`task${task.id}-checkbox`).addEventListener('input', (e) => {
       const checked = document.getElementById(e.target.id).checked;
@@ -60,7 +70,7 @@ const getTasks = async (useCached = false) => {
       } else {
         document.getElementById(`task${task.id}-text`).classList.remove('crossed');
       }
-      debounceFunction(async () => await editTask(task.id, undefined, checked), 500);
+      debounceFunction(async () => await editTaskStatus(task.id, checked), 500);
     });
   });
 
@@ -68,12 +78,13 @@ const getTasks = async (useCached = false) => {
 };
 
 const createTask = async () => {
-  const task = document.getElementById('create-task-input').value;
+  const body = document.getElementById('create-task-input').value;
   document.getElementById('create-task-input').value = '';
 
-  await fetch('http://localhost:3000/api/todos', {
+  await fetch('http://localhost:3000/api/tasks', {
     method: 'POST',
-    body: JSON.stringify({ task }),
+    body: JSON.stringify({ body }),
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
@@ -82,10 +93,22 @@ const createTask = async () => {
   await getTasks();
 };
 
-const editTask = async (id, task = undefined, done = undefined) => {
-  await fetch(`http://localhost:3000/api/todos/${id}`, {
+const editTaskBody = async (id, body) => {
+  await fetch(`http://localhost:3000/api/tasks/${id}/body`, {
     method: 'PUT',
-    body: JSON.stringify({ task, done }),
+    body: JSON.stringify({ body }),
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+const editTaskStatus = async (id, done) => {
+  await fetch(`http://localhost:3000/api/tasks/${id}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status: done }),
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
@@ -93,11 +116,23 @@ const editTask = async (id, task = undefined, done = undefined) => {
 };
 
 const deleteTask = async (id) => {
-  await fetch(`http://localhost:3000/api/todos/${id}`, {
+  await fetch(`http://localhost:3000/api/tasks/${id}`, {
     method: 'DELETE',
+    credentials: 'include',
   });
 
   await getTasks();
+};
+
+const logout = async () => {
+  await fetch(`http://localhost:3000/api/auth/logout`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+
+  window.localStorage.setItem('tasks', '[]');
+  window.localStorage.setItem('loggedIn', 'false');
+  window.location.replace('/to-do-app/public/login.html');
 };
 
 window.onload = getTasks;
@@ -105,7 +140,6 @@ window.onload = getTasks;
 document.getElementById('create-task-input').addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
     event.preventDefault();
-    console.log('aaa');
     document.getElementById('create-task-button').click();
   }
 });

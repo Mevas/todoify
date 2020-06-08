@@ -7,28 +7,29 @@
       content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>ToDo App</title>
+    <title>Todoify</title>
     <link rel="stylesheet" href="index.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
   </head>
   <body>
     <header class="header">
-      <nav>
-        <a href="#" class="logo">To-Do App</a>
+      <nav class="nav">
+        <a href="#" class="pill">Todoify</a>
+        <button class="pill" onclick="logout()">Log Out</button>
       </nav>
     </header>
     <main>
       <section class="wrapper">
         <div class="tasks-container">
-          <h1 class="title">📑 To-Do App 🖊</h1>
+          <h1 class="title">📑 <span id="list-title">My list</span> 🖊</h1>
+          <div id="tasks-board">
+            <ul id="tasksList"></ul>
+          </div>
           <div class="addContainer">
-            <form class="add-form" action="index.html" method="post">
+            <form class="add-form" action="tasks.html" method="post">
               <input id="create-task-input" class="create-task-input" type="text" placeholder="New task" name="task" />
               <button id="create-task-button" class="button create-task-button" type="button" onclick="createTask()">Add</button>
             </form>
-          </div>
-          <div id="tasks-board">
-            <ul id="tasksList"></ul>
           </div>
         </div>
       </section>
@@ -36,6 +37,6 @@
     <footer class="footer">
       <div class="copyright">2020 © Me</div>
     </footer>
-    <script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript" src="js/tasks.js"></script>
   </body>
 </html>

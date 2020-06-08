@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Todoify</title>
+    <link rel="stylesheet" href="index.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="header">
+      <nav>
+        <a href="#" class="pill">Todoify</a>
+      </nav>
+    </header>
+    <main>
+      <section class="wrapper">
+        <div class="tasks-container">
+          <h1 class="title">Log In</h1>
+          <form onsubmit="return false;" class="flex space-between column w50">
+            <label for="email"></label>
+            <input type="email" id="email" name="email" placeholder="Email" class="login-input" required />
+            <div id="email-errors" class="errors"></div>
+
+            <label for="password"></label>
+            <input type="password" id="password" name="password" placeholder="Password" class="login-input" required />
+            <div id="password-errors" class="errors"></div>
+
+            <div id="global-errors" class="errors"></div>
+            <button type="submit" onclick="login()">Log in</button>
+
+            <p class="form-footer">Don't have an account? Make one <a href="signup.html">here</a>.</p>
+          </form>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <div class="copyright">2020 © Me</div>
+    </footer>
+    <script type="text/javascript" src="js/login.js"></script>
+  </body>
+</html>
