@@ -1,11 +1,9 @@
-import { Body, Controller, Ip, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Ip, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
-import { PrismaService } from '../prisma/prisma.service';
-import { RedisService } from 'nestjs-redis';
 
 @Controller('auth')
 export class AuthController {

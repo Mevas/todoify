@@ -4,7 +4,18 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { RedisModule } from 'nestjs-redis';
-import { REDIS_BANNED_IPS_DB, REDIS_HOST, REDIS_LOGIN_ATTEMPTS_DB, REDIS_PASSWORD, REDIS_PORT } from '../config';
+import {
+  EMAIL_HOST,
+  EMAIL_HOST_PASSWORD,
+  EMAIL_HOST_PORT,
+  EMAIL_HOST_USER,
+  REDIS_BANNED_IPS_DB,
+  REDIS_HOST,
+  REDIS_LOGIN_ATTEMPTS_DB,
+  REDIS_PASSWORD,
+  REDIS_PORT,
+} from '../config';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -28,6 +39,20 @@ import { REDIS_BANNED_IPS_DB, REDIS_HOST, REDIS_LOGIN_ATTEMPTS_DB, REDIS_PASSWOR
         password: REDIS_PASSWORD,
       },
     ]),
+    MailerModule.forRoot({
+      transport: {
+        host: EMAIL_HOST,
+        port: EMAIL_HOST_PORT,
+        secure: false,
+        auth: {
+          user: EMAIL_HOST_USER,
+          pass: EMAIL_HOST_PASSWORD,
+        },
+      },
+      defaults: {
+        from: `Todoify <${EMAIL_HOST_USER}>`,
+      },
+    }),
   ],
   controllers: [],
   providers: [],

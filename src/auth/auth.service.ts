@@ -5,10 +5,15 @@ import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { RedisService } from 'nestjs-redis';
 import { MAX_ATTEMPTS, MAX_ATTEMPTS_EXCEEDED_PENALTY, TIME_INTERVAL } from '../../config';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService, private readonly redisService: RedisService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly redisService: RedisService,
+    private readonly mailer: MailerService,
+  ) {}
 
   async signup({ name, email, password }: SignupDto) {
     const emailExists = await this.prisma.client.user.findOne({ where: { email } });
@@ -33,20 +38,19 @@ export class AuthService {
       throw new HttpException('Too Many Requests', HttpStatus.TOO_MANY_REQUESTS);
     }
 
-    if (attempts >= MAX_ATTEMPTS) {
-      await bannedIps.set(ip, 'true', 'ex', MAX_ATTEMPTS_EXCEEDED_PENALTY);
-      await loginAttempts.set(ip, 0);
-    }
-
     const user = await this.prisma.client.user.findOne({ where: { email } });
 
     if (!user) {
-      await loginAttempts.multi().incr(ip).expire(ip, TIME_INTERVAL).exec();
+      throw new NotFoundException('Email not found');
+    }
 
-      throw new NotFoundException({
-        attemptsLeft: MAX_ATTEMPTS - attempts,
-        statusCode: HttpStatus.NOT_FOUND,
-        error: 'Email not found',
+    if (attempts >= MAX_ATTEMPTS) {
+      await bannedIps.set(ip, 'true', 'ex', MAX_ATTEMPTS_EXCEEDED_PENALTY);
+      await loginAttempts.set(ip, 0);
+      await this.mailer.sendMail({
+        to: user.email,
+        subject: 'Failed login attempts on Todoify',
+        text: `Unauthorized login attempts detected from ${ip}.`,
       });
     }
 
