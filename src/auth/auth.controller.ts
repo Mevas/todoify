@@ -1,9 +1,12 @@
-import { Body, Controller, Ip, Post, Res } from '@nestjs/common';
+import { Body, Controller, Ip, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { CurrentUser } from '../../common/decorators/CurrentUser';
+import { User } from '@prisma/client';
 
 @Controller('auth')
 export class AuthController {
@@ -30,7 +33,10 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout(@Res() res: Response) {
+  @UseGuards(JwtAuthGuard)
+  async logout(@Res() res: Response, @CurrentUser() user: User) {
+    await this.authService.logout(user);
+
     res.cookie('token', '', { httpOnly: true });
     res.sendStatus(200);
   }

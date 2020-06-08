@@ -8,6 +8,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { RedisModule } from 'nestjs-redis';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { LoggerModule } from 'src/logger/logger.module';
 
 @Module({
   imports: [
@@ -21,6 +22,10 @@ import { MailerModule } from '@nestjs-modules/mailer';
     }),
     RedisModule,
     MailerModule,
+    LoggerModule.register({
+      filename: 'app.log',
+      level: 'Debug',
+    }),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

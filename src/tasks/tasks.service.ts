@@ -1,48 +1,75 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { LoggerService } from '../logger/logger.service';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class TasksService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private readonly logger: LoggerService) {}
 
-  async getTasks(userId: number) {
-    return this.prisma.client.task.findMany({ where: { userId } });
+  async getTasks(user: User) {
+    return this.prisma.client.task.findMany({ where: { user } });
   }
 
-  async getTaskById(userId: number, taskId: number) {
-    const task = (await this.prisma.client.user.findOne({ where: { id: userId } }).tasks({ where: { id: taskId } }))[0];
+  async getTaskById(user: User, taskId: number) {
+    const task = (await this.prisma.client.user.findOne({ where: { id: user.id } }).tasks({ where: { id: taskId } }))[0];
 
     if (!task) {
       throw new NotFoundException(`Task with id ${taskId} not found`);
     }
 
-    return (await this.prisma.client.user.findOne({ where: { id: userId } }).tasks({ where: { id: taskId } }))[0];
+    return (await this.prisma.client.user.findOne({ where: { id: user.id } }).tasks({ where: { id: taskId } }))[0];
   }
 
-  async createTask(userId: number, body: string) {
-    return this.prisma.client.task.create({ data: { body, user: { connect: { id: userId } } } });
+  async createTask(user: User, body: string) {
+    try {
+      const task = await this.prisma.client.task.create({ data: { body, user: { connect: { id: user.id } } } });
+      await this.logger.info(`User ${user.name} created a task (id [${task.id}], body [${body}])`);
+      return task;
+    } catch (e) {
+      await this.logger.error(e);
+    }
   }
 
-  async updateTaskBody(userId: number, taskId: number, body: string) {
-    await this.checkIfTaskExists(userId, taskId);
+  async updateTaskBody(user: User, taskId: number, body: string) {
+    await this.checkIfTaskExists(user, taskId);
 
-    return this.prisma.client.task.update({ where: { id: taskId }, data: { body } });
+    try {
+      const task = await this.prisma.client.task.update({ where: { id: taskId }, data: { body } });
+      await this.logger.info(`User ${user.name} updated task [${task.id}] with a new body: [${body}]`);
+      return task;
+    } catch (e) {
+      await this.logger.error(e);
+    }
   }
 
-  async updateTaskStatus(userId: number, taskId: number, status: boolean) {
-    await this.checkIfTaskExists(userId, taskId);
+  async updateTaskStatus(user: User, taskId: number, status: boolean) {
+    await this.checkIfTaskExists(user, taskId);
 
-    return this.prisma.client.task.update({ where: { id: taskId }, data: { done: status } });
+    try {
+      const task = await this.prisma.client.task.update({ where: { id: taskId }, data: { done: status } });
+      await this.logger.info(`User ${user.name} updated task [${task.id}] with a new status: [${status ? 'done' : 'not done'}]`);
+      return task;
+    } catch (e) {
+      await this.logger.error(e);
+    }
   }
 
-  async deleteTask(userId: number, taskId: number) {
-    await this.checkIfTaskExists(userId, taskId);
+  async deleteTask(user: User, taskId: number) {
+    await this.checkIfTaskExists(user, taskId);
 
-    return this.prisma.client.task.delete({ where: { id: taskId } });
+    try {
+      const task = await this.prisma.client.task.delete({ where: { id: taskId } });
+      await this.logger.info(`User ${user.name} deleted task [${task.id}]`);
+      return true;
+    } catch (e) {
+      await this.logger.error(e);
+      return false;
+    }
   }
 
-  async checkIfTaskExists(userId: number, taskId: number) {
-    const task = (await this.prisma.client.user.findOne({ where: { id: userId } }).tasks({ where: { id: taskId } }))[0];
+  async checkIfTaskExists(user: User, taskId: number) {
+    const task = (await this.prisma.client.user.findOne({ where: { id: user.id } }).tasks({ where: { id: taskId } }))[0];
 
     if (!task) {
       throw new NotFoundException(`Task with id ${taskId} not found`);

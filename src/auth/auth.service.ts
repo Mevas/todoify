@@ -6,6 +6,8 @@ import { LoginDto } from './dto/login.dto';
 import { RedisService } from 'nestjs-redis';
 import { MAX_ATTEMPTS, MAX_ATTEMPTS_EXCEEDED_PENALTY, TIME_INTERVAL } from '../../config';
 import { MailerService } from '@nestjs-modules/mailer';
+import { LoggerService } from 'src/logger/logger.service';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +15,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly redisService: RedisService,
     private readonly mailer: MailerService,
+    private readonly logger: LoggerService,
   ) {}
 
   async signup({ name, email, password }: SignupDto) {
@@ -24,17 +27,24 @@ export class AuthService {
 
     const hashedPassword = await hash(password, 10);
 
-    return this.prisma.client.user.create({ data: { name, email, password: hashedPassword } });
+    const user = await this.prisma.client.user.create({ data: { name, email, password: hashedPassword } });
+
+    await this.logger.info(`New user: [${user.name}] - [${user.email}]`);
+
+    return user;
   }
 
   async login({ email, password }: LoginDto, ip) {
     const loginAttempts = this.redisService.getClient('loginAttempts');
     const bannedIps = this.redisService.getClient('bannedIps');
 
-    const attempts = parseInt(await loginAttempts.get(ip)) ?? 0;
+    const attempts = parseInt((await loginAttempts.get(ip)) ?? '1');
 
     if ((await bannedIps.get(ip)) === 'true') {
       await bannedIps.set(ip, 'true', 'ex', MAX_ATTEMPTS_EXCEEDED_PENALTY);
+
+      await this.logger.info(`Blocked login attempt from [${ip}]`);
+
       throw new HttpException('Too Many Requests', HttpStatus.TOO_MANY_REQUESTS);
     }
 
@@ -52,12 +62,15 @@ export class AuthService {
         subject: 'Failed login attempts on Todoify',
         text: `Unauthorized login attempts detected from ${ip}.`,
       });
+      await this.logger.warn(`Banned [${ip}] for ${MAX_ATTEMPTS_EXCEEDED_PENALTY} seconds - Too many login attempts`);
     }
 
     const valid = await compare(password, user.password);
 
     if (!valid) {
       await loginAttempts.multi().incr(ip).expire(ip, TIME_INTERVAL).exec();
+
+      await this.logger.info(`Failed login attempt from [${ip}]`);
 
       throw new BadRequestException({
         attemptsLeft: MAX_ATTEMPTS - attempts,
@@ -66,7 +79,13 @@ export class AuthService {
       });
     }
 
+    await this.logger.info(`User [${user.name}] ([${user.email}]) logged in from [${ip}]`);
+
     return user;
+  }
+
+  async logout(user: User) {
+    await this.logger.info(`User [${user.name}] ([${user.email}]) logged out`);
   }
 
   async validate({ id }) {

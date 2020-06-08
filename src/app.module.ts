@@ -16,6 +16,7 @@ import {
   REDIS_PORT,
 } from '../config';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
         from: `Todoify <${EMAIL_HOST_USER}>`,
       },
     }),
+    LoggerModule,
   ],
   controllers: [],
   providers: [],
