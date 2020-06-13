@@ -7,6 +7,24 @@ const debounceFunction = (func, delay) => {
   timerId = setTimeout(func, delay);
 };
 
+const onPageLoad = async () => {
+  const user = JSON.parse(window.localStorage.getItem('user'));
+  console.log(user);
+  const datetime = new Date(parseInt(user.lastLogin));
+  const datetimeString = `${datetime.toLocaleDateString('ro-RO', { hour: 'numeric', minute: 'numeric', second: 'numeric' })}`;
+  if (user.logins <= 1) {
+    document.getElementById('greeting').innerHTML += `
+      <div>Hi there, this is the first time you've logged in!</div>
+    `;
+  } else {
+    document.getElementById('greeting').innerHTML += `
+      <div>Hi ${user.name}, your last login was from ${user.lastIp} on ${datetimeString}.</div>
+      <div>You've visited your task list ${user.logins} times now!</div>
+    `;
+  }
+  await getTasks();
+};
+
 const getTasks = async (useCached = false) => {
   if (window.localStorage.getItem('loggedIn') === 'false') {
     window.location.replace('/to-do-app/public/login.html');
@@ -135,7 +153,7 @@ const logout = async () => {
   window.location.replace('/to-do-app/public/login.html');
 };
 
-window.onload = getTasks;
+window.onload = onPageLoad;
 
 document.getElementById('create-task-input').addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {

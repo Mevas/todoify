@@ -13,12 +13,12 @@ import { User } from '@prisma/client';
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly redisService: RedisService,
+    private readonly redis: RedisService,
     private readonly mailer: MailerService,
     private readonly logger: LoggerService,
   ) {}
 
-  async signup({ name, email, password }: SignupDto) {
+  async signup({ name, email, password }: SignupDto, ip: string) {
     const emailExists = await this.prisma.client.user.findOne({ where: { email } });
 
     if (emailExists) {
@@ -31,14 +31,19 @@ export class AuthService {
 
     await this.logger.info(`New user: [${user.name}] - [${user.email}]`);
 
+    const logins = await this.redis.getClient('logins');
+    logins.incr(`${user.email}:logins`);
+    logins.set(`${user.email}:lastIp`, ip);
+    logins.set(`${user.email}:lastLogin`, Date.now());
+
     const { password: p, ...r } = user;
 
-    return r;
+    return { ...r, logins: 1 };
   }
 
   async login({ email, password }: LoginDto, ip) {
-    const loginAttempts = this.redisService.getClient('loginAttempts');
-    const bannedIps = this.redisService.getClient('bannedIps');
+    const loginAttempts = this.redis.getClient('loginAttempts');
+    const bannedIps = this.redis.getClient('bannedIps');
 
     const attempts = parseInt((await loginAttempts.get(ip)) ?? '0');
 
@@ -56,7 +61,7 @@ export class AuthService {
       throw new NotFoundException('Email not found');
     }
 
-    if (attempts >= MAX_ATTEMPTS) {
+    if (attempts > MAX_ATTEMPTS) {
       await bannedIps.set(ip, 'true', 'ex', MAX_ATTEMPTS_EXCEEDED_PENALTY);
       await loginAttempts.set(ip, 0);
       await this.mailer.sendMail({
@@ -83,9 +88,17 @@ export class AuthService {
 
     await this.logger.info(`User [${user.name}] ([${user.email}]) logged in from [${ip}]`);
 
+    const logins = await this.redis.getClient('logins');
+    const lastIp = await logins.get(`${user.email}:lastIp`);
+    const lastLogin = await logins.get(`${user.email}:lastLogin`);
+
+    logins.incr(`${user.email}:logins`);
+    logins.set(`${user.email}:lastIp`, ip);
+    logins.set(`${user.email}:lastLogin`, Date.now());
+
     const { password: p, ...r } = user;
 
-    return r;
+    return { ...r, logins: await logins.get(`${user.email}:logins`), lastIp, lastLogin };
   }
 
   async logout(user: User) {

@@ -13,8 +13,8 @@ export class AuthController {
   constructor(private readonly authService: AuthService, private readonly jwt: JwtService) {}
 
   @Post('signup')
-  async signup(@Body() signupDto: SignupDto, @Res() res: Response) {
-    const user = await this.authService.signup(signupDto);
+  async signup(@Body() signupDto: SignupDto, @Res() res: Response, @Ip() ip: string) {
+    const user = await this.authService.signup(signupDto, ip);
 
     const jwt = this.jwt.sign({ id: user.id });
     res.cookie('token', jwt, { httpOnly: true });

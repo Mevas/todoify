@@ -11,6 +11,7 @@ import {
   REDIS_BANNED_IPS_DB,
   REDIS_HOST,
   REDIS_LOGIN_ATTEMPTS_DB,
+  REDIS_LOGINS_DB,
   REDIS_PASSWORD,
   REDIS_PORT,
 } from '../config';
@@ -35,6 +36,13 @@ import { LoggerModule } from './logger/logger.module';
         host: REDIS_HOST,
         port: REDIS_PORT,
         db: REDIS_BANNED_IPS_DB,
+        password: REDIS_PASSWORD,
+      },
+      {
+        name: 'logins',
+        host: REDIS_HOST,
+        port: REDIS_PORT,
+        db: REDIS_LOGINS_DB,
         password: REDIS_PASSWORD,
       },
     ]),

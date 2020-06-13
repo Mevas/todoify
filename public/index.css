@@ -61,11 +61,18 @@ main {
   grid-area: center;
 }
 
+.info-container {
+  background-color: #ffffff;
+  padding: 10px 30px;
+  border-radius: 20px;
+  margin-top: 100px;
+  margin-bottom: 20px;
+}
+
 .tasks-container {
   background-color: #ffffff;
-  padding: 40px;
-  border-radius: 30px;
-  margin-top: 200px;
+  padding: 30px;
+  border-radius: 20px;
 }
 
 .checkbox {
@@ -170,7 +177,7 @@ button:focus {
 
 .footer {
   text-align: center;
-  padding: 10px;
+  padding-top: 10px;
 }
 
 .copyright {
