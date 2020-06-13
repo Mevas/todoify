@@ -27,7 +27,7 @@ const onPageLoad = async () => {
 
 const getTasks = async (useCached = false) => {
   if (window.localStorage.getItem('loggedIn') === 'false') {
-    window.location.replace('/to-do-app/public/login.html');
+    window.location.replace('login');
     return;
   }
 
@@ -150,7 +150,7 @@ const logout = async () => {
 
   window.localStorage.setItem('tasks', '[]');
   window.localStorage.setItem('loggedIn', 'false');
-  window.location.replace('/to-do-app/public/login.html');
+  window.location.replace('login');
 };
 
 window.onload = onPageLoad;

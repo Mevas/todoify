@@ -46,5 +46,5 @@ const login = async () => {
 
   window.localStorage.setItem('loggedIn', 'true');
   window.localStorage.setItem('user', JSON.stringify(response));
-  window.location.replace('/to-do-app/public/tasks.html');
+  window.location.replace('tasks');
 };

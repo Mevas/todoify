@@ -1,0 +1,7 @@
+# for root
+/*              /index.html     200
+
+# for the rest
+/signup      /signup.html   200
+/login      /login.html   200
+/tasks        /tasks.html     200
