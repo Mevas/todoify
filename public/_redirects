@@ -5,3 +5,5 @@
 /signup      /signup.html   200
 /login      /login.html   200
 /tasks        /tasks.html     200
+
+/api/* http://endpoint.com/api/:splat 200!
