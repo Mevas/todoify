@@ -12,7 +12,7 @@ const signup = async () => {
   const passwodErrors = document.getElementById('password-errors');
   const globalErrors = document.getElementById('global-errors');
 
-  let response = await fetch('http://localhost:3000/api/auth/signup', {
+  let response = await fetch('http://188.26.250.90:3000/api/auth/signup', {
     method: 'POST',
     body: JSON.stringify({ name, email, password }),
     credentials: 'include',

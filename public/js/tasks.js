@@ -55,7 +55,7 @@ const getTasks = async (useCached = false) => {
     }
   }
 
-  const response = await fetch('http://localhost:3000/api/tasks', { credentials: 'include' });
+  const response = await fetch('http://188.26.250.90:3000/api/tasks', { credentials: 'include' });
   const tasks = await response.json();
   tasks.sort((t1, t2) => t1.id - t2.id);
 
@@ -99,7 +99,7 @@ const createTask = async () => {
   const body = document.getElementById('create-task-input').value;
   document.getElementById('create-task-input').value = '';
 
-  await fetch('http://localhost:3000/api/tasks', {
+  await fetch('http://188.26.250.90:3000/api/tasks', {
     method: 'POST',
     body: JSON.stringify({ body }),
     credentials: 'include',
@@ -112,7 +112,7 @@ const createTask = async () => {
 };
 
 const editTaskBody = async (id, body) => {
-  await fetch(`http://localhost:3000/api/tasks/${id}/body`, {
+  await fetch(`http://188.26.250.90:3000/api/tasks/${id}/body`, {
     method: 'PUT',
     body: JSON.stringify({ body }),
     credentials: 'include',
@@ -123,7 +123,7 @@ const editTaskBody = async (id, body) => {
 };
 
 const editTaskStatus = async (id, done) => {
-  await fetch(`http://localhost:3000/api/tasks/${id}/status`, {
+  await fetch(`http://188.26.250.90:3000/api/tasks/${id}/status`, {
     method: 'PUT',
     body: JSON.stringify({ status: done }),
     credentials: 'include',
@@ -134,7 +134,7 @@ const editTaskStatus = async (id, done) => {
 };
 
 const deleteTask = async (id) => {
-  await fetch(`http://localhost:3000/api/tasks/${id}`, {
+  await fetch(`http://188.26.250.90:3000/api/tasks/${id}`, {
     method: 'DELETE',
     credentials: 'include',
   });
@@ -143,7 +143,7 @@ const deleteTask = async (id) => {
 };
 
 const logout = async () => {
-  await fetch(`http://localhost:3000/api/auth/logout`, {
+  await fetch(`http://188.26.250.90:3000/api/auth/logout`, {
     method: 'POST',
     credentials: 'include',
   });
