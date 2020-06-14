@@ -8,7 +8,11 @@ export class TasksService {
   constructor(private readonly prisma: PrismaService, private readonly logger: LoggerService) {}
 
   async getTasks(user: User) {
-    return this.prisma.client.task.findMany({ where: { user } });
+    const tasks = await this.prisma.client.task.findMany({ where: { user } });
+
+    await this.logger.info(`User [${user.name}] requested his ${tasks.length} tasks`);
+
+    return tasks;
   }
 
   async getTaskById(user: User, taskId: number) {
