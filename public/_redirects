@@ -1,3 +1,5 @@
+/api/* http://188.26.250.90:3000/api/:splat 200!
+
 # for root
 /*              /index.html     200
 
@@ -5,5 +7,3 @@
 /signup      /signup.html   200
 /login      /login.html   200
 /tasks        /tasks.html     200
-
-/api/* http://188.26.250.90:3000/api/:splat 200!
