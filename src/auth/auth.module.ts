@@ -18,7 +18,7 @@ import { LoggerModule } from 'src/logger/logger.module';
     }),
     JwtModule.register({
       secret: JWT_SECRET,
-      signOptions: { expiresIn: '3600s' },
+      signOptions: { expiresIn: `${3600 * 24 * 7}s` },
     }),
     RedisModule,
     MailerModule,
