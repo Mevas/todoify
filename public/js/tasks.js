@@ -9,7 +9,12 @@ const debounceFunction = (func, delay) => {
 
 const onPageLoad = async () => {
   const user = JSON.parse(window.localStorage.getItem('user'));
-  console.log(user);
+
+  if (!user) {
+    window.location.replace('login');
+    return;
+  }
+
   const datetime = new Date(parseInt(user.lastLogin));
   const datetimeString = `${datetime.toLocaleDateString('ro-RO', { hour: 'numeric', minute: 'numeric', second: 'numeric' })}`;
   if (user.logins <= 1) {

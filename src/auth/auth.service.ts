@@ -61,7 +61,7 @@ export class AuthService {
       throw new NotFoundException('Email not found');
     }
 
-    if (attempts > MAX_ATTEMPTS) {
+    if (attempts >= MAX_ATTEMPTS) {
       await bannedIps.set(ip, 'true', 'ex', MAX_ATTEMPTS_EXCEEDED_PENALTY);
       await loginAttempts.set(ip, 0);
       await this.mailer.sendMail({
