@@ -26,7 +26,7 @@ const onPageLoad = async () => {
 };
 
 const getTasks = async (useCached = false) => {
-  if (window.localStorage.getItem('loggedIn') === 'false') {
+  if (!window.localStorage.getItem('loggedIn') || window.localStorage.getItem('loggedIn') === 'false') {
     window.location.replace('login');
     return;
   }
